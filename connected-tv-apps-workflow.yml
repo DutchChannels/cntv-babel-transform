@@ -1,0 +1,57 @@
+name: Connected TV Apps - Build and Deploy
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-transpile:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        channel: [lov, nfn]
+        platform: [tizen]
+
+    steps:
+      - name: Checkout connected-tv-apps
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build React app for ${{ matrix.channel }}
+        run: |
+          npm run build:${{ matrix.channel }}
+        env:
+          REACT_APP_CHANNEL: ${{ matrix.channel }}
+          REACT_APP_PLATFORM: ${{ matrix.platform }}
+
+      - name: Transpile JS files for Connected TV
+        uses: DutchChannels/cntv-babel-transform@v1
+        with:
+          channel: ${{ matrix.channel }}
+          platform: ${{ matrix.platform }}
+          build-path: "./platformBuilds"
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.channel }}-${{ matrix.platform }}-build
+          path: platformBuilds/${{ matrix.channel }}_${{ matrix.platform }}/
+          retention-days: 7
+
+      - name: Deploy to CDN (Production only)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Deploying ${{ matrix.channel }} to production CDN"
+          # Add your actual deployment script here
+          # e.g., aws s3 sync, rsync, etc.

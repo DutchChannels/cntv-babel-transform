@@ -1,0 +1,43 @@
+name: Example Usage of CNTV Babel Transform
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        channel: [lov, nfn]
+        platform: [tizen]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Transpile for Connected TV
+        uses: DutchChannels/cntv-babel-transform@v1
+        with:
+          channel: ${{ matrix.channel }}
+          platform: ${{ matrix.platform }}
+          build-path: "./dist/platformBuilds"
+
+      - name: Deploy to CDN
+        run: |
+          echo "Deploying ${{ matrix.channel }} build for ${{ matrix.platform }}"
+          # Add your deployment logic here

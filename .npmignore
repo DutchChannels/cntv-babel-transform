@@ -1,0 +1,27 @@
+# Development files
+node_modules/
+*.log
+.DS_Store
+npm-debug.log
+package-lock.json
+
+# Test files (keep for GitHub Actions)
+# test/
+
+# Keep src/ for GitHub Actions
+# src/
+
+# Build artifacts
+dist/
+coverage/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Yarn files
+.yarn/
+.pnp.*
+yarn-error.log

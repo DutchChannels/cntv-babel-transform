@@ -1,0 +1,16 @@
+name: "CNTV Babel Transform"
+description: "Transpile JavaScript files using Babel for Connected TV apps"
+inputs:
+  channel:
+    description: "Channel name (lov, nfn, etc.)"
+    required: true
+  platform:
+    description: "Target platform (tizen, etc.)"
+    required: true
+  build-path:
+    description: "Path to the build directory"
+    required: false
+    default: "./platformBuilds"
+runs:
+  using: "node20"
+  main: "src/index.js"
